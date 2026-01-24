@@ -1,11 +1,23 @@
 #include <stdio.h>
 
-int main() {
-    int n, i;
-    int bt[10], wt[10], tat[10];
-    int total_wt = 0, total_tat = 0;
+/* ============================================================
+ * Student implementation area
+ * ============================================================ */
+void fcfs_schedule(Process p[], int n)
+{
+    (void)p;
+    (void)n;
+    /* TODO: Implement FCFS scheduling algorithm here */
+}
 
-    printf("Numero de procesos: ");
+/* ============================================================
+ * DO NOT MODIFY MAIN
+ * ============================================================ */
+#ifndef UNIT_TEST
+int main(void)
+{
+    int n;
+    printf("Número de procesos: ");
     scanf("%d", &n);
 
     for(i = 0; i < n; i++) {
@@ -32,5 +44,9 @@ int main() {
     printf("\nPromedio WT = %.2f", (float) total_wt / n);
     printf("\nPromedio TAT = %.2f\n", (float) total_tat / n);
 
+    fcfs_schedule(p, n);
+
+    print_results(p, n, "FCFS Scheduling");
     return 0;
 }
+#endif
