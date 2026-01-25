@@ -1,13 +1,34 @@
 #include <stdio.h>
+#include "process.h"
 
 /* ============================================================
  * Student implementation area
  * ============================================================ */
 void fcfs_schedule(Process p[], int n)
 {
-    (void)p;
-    (void)n;
-    /* TODO: Implement FCFS scheduling algorithm here */
+    int time = 0;
+
+    // Ordenar por arrival_time
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (p[j].arrival_time > p[j + 1].arrival_time) {
+                Process temp = p[j];
+                p[j] = p[j + 1];
+                p[j + 1] = temp;
+            }
+        }
+    }
+
+    // Calcular tiempos
+    for (int i = 0; i < n; i++) {
+        if (time < p[i].arrival_time)
+            time = p[i].arrival_time;
+
+        p[i].waiting_time = time - p[i].arrival_time;
+        time += p[i].burst_time;
+        p[i].turnaround_time =
+            p[i].waiting_time + p[i].burst_time;
+    }
 }
 
 /* ============================================================
@@ -20,33 +41,13 @@ int main(void)
     printf("Número de procesos: ");
     scanf("%d", &n);
 
-    for(i = 0; i < n; i++) {
-        printf("Tiempo de rafaga del proceso %d: ", i + 1);
-        scanf("%d", &bt[i]);
-    }
-
-    wt[0] = 0;
-    for(i = 1; i < n; i++) {
-        wt[i] = wt[i - 1] + bt[i - 1];
-    }
-
-    for(i = 0; i < n; i++) {
-        tat[i] = bt[i] + wt[i];
-        total_wt += wt[i];
-        total_tat += tat[i];
-    }
-
-    printf("\nProceso\tBT\tWT\tTAT\n");
-    for(i = 0; i < n; i++) {
-        printf("P%d\t%d\t%d\t%d\n", i + 1, bt[i], wt[i], tat[i]);
-    }
-
-    printf("\nPromedio WT = %.2f", (float) total_wt / n);
-    printf("\nPromedio TAT = %.2f\n", (float) total_tat / n);
+    Process p[n];
+    read_processes(p, n);
+    init_processes(p, n);
 
     fcfs_schedule(p, n);
-
     print_results(p, n, "FCFS Scheduling");
     return 0;
 }
 #endif
+
