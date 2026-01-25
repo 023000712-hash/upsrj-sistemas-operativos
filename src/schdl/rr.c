@@ -6,10 +6,33 @@
  * ============================================================ */
 void rr_schedule(Process p[], int n, int quantum)
 {
-    (void)p;
-    (void)n;
-    (void)quantum;
-    /* TODO: Implement RR scheduling algorithm here */
+    int time = 0;
+    int done;
+
+    do {
+        done = 1;
+
+        for (int i = 0; i < n; i++) {
+            if (p[i].remaining_time > 0 &&
+                p[i].arrival_time <= time) {
+
+                done = 0;
+
+                if (p[i].remaining_time > quantum) {
+                    time += quantum;
+                    p[i].remaining_time -= quantum;
+                } else {
+                    time += p[i].remaining_time;
+                    p[i].waiting_time =
+                        time - p[i].arrival_time - p[i].burst_time;
+                    p[i].turnaround_time =
+                        p[i].waiting_time + p[i].burst_time;
+                    p[i].remaining_time = 0;
+                    p[i].completed = 1;
+                }
+            }
+        }
+    } while (!done);
 }
 
 /* ============================================================
@@ -37,3 +60,4 @@ int main(void)
     return 0;
 }
 #endif
+
