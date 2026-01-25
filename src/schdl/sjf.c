@@ -7,34 +7,43 @@
 void sjf_schedule(Process p[], int n)
 {
     int time = 0;
+    int completed = 0;
 
-    /* Ordenar por arrival_time, luego burst_time, luego id */
-    for (int i = 0; i < n - 1; i++) {
-        for (int j = 0; j < n - i - 1; j++) {
-            if (p[j].arrival_time > p[j + 1].arrival_time ||
-               (p[j].arrival_time == p[j + 1].arrival_time &&
-                p[j].burst_time > p[j + 1].burst_time) ||
-               (p[j].arrival_time == p[j + 1].arrival_time &&
-                p[j].burst_time == p[j + 1].burst_time &&
-                p[j].id > p[j + 1].id)) {
+    while (completed < n) {
+        int idx = -1;
 
-                Process temp = p[j];
-                p[j] = p[j + 1];
-                p[j + 1] = temp;
+        /* Buscar el proceso más corto que ya haya llegado */
+        for (int i = completed; i < n; i++) {
+            if (!p[i].completed && p[i].arrival_time <= time) {
+                if (idx == -1 ||
+                    p[i].burst_time < p[idx].burst_time ||
+                    (p[i].burst_time == p[idx].burst_time &&
+                     p[i].id < p[idx].id)) {
+                    idx = i;
+                }
             }
         }
-    }
 
-    /* Calcular tiempos en ese orden */
-    for (int i = 0; i < n; i++) {
-        if (time < p[i].arrival_time)
-            time = p[i].arrival_time;
+        /* Si nadie ha llegado aún, avanzar el tiempo */
+        if (idx == -1) {
+            time++;
+            continue;
+        }
 
-        p[i].waiting_time = time - p[i].arrival_time;
-        time += p[i].burst_time;
-        p[i].turnaround_time =
-            p[i].waiting_time + p[i].burst_time;
-        p[i].completed = 1;
+        /* Reordenar el arreglo en orden de ejecución */
+        Process temp = p[completed];
+        p[completed] = p[idx];
+        p[idx] = temp;
+
+        /* Calcular tiempos */
+        p[completed].waiting_time =
+            time - p[completed].arrival_time;
+        time += p[completed].burst_time;
+        p[completed].turnaround_time =
+            p[completed].waiting_time + p[completed].burst_time;
+
+        p[completed].completed = 1;
+        completed++;
     }
 }
 
